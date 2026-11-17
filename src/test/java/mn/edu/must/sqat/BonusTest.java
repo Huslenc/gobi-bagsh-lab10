@@ -7,7 +7,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 /**
- * Lab 10, Part B: stage 2, ALL-DU-PAIRS (b01..b14).
+ * Lab 10, Part B: final: all-DU-pairs plus the b15 test that kills mutant M2.
  * Line numbers refer to DataFlowTargets.java. Pair IDs (Q1..Q33) are defined in the README DU table.
  */
 class BonusTest {
@@ -94,5 +94,11 @@ class BonusTest {
     @DisplayName("b14: absence first, then presence (streak:46 -> 41) -> 5. Covers Q1,Q3,Q4,Q5,Q8,Q9,Q14,Q18,Q19,Q20,Q21,Q25,Q27,Q28,Q32")
     void b14_leadingAbsence() {
         assertEquals(5, DataFlowTargets.bonus(new int[] {0, 1}, 1));
+    }
+
+    @Test
+    @DisplayName("b15: present = 5 but the longest streak is only 3 -> 5 (no streak bonus); kills mutant M2 (best = present).")
+    void b15_m2Killer_presentNotStreak() {
+        assertEquals(5, DataFlowTargets.bonus(new int[] {1, 1, 1, 0, 1, 1}, 1));
     }
 }
