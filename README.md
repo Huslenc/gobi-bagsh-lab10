@@ -13,7 +13,7 @@ OpenJDK Runtime Environment (build 21.0.13+9-1-deb13u2-Debian)
 OpenJDK 64-Bit Server VM (build 21.0.13+9-1-deb13u2-Debian, mixed mode, sharing)
 
 $ mvn -version
-[1mApache Maven 3.9.9[m
+Apache Maven 3.9.9
 Maven home: /usr/share/maven
 Java version: 21.0.13, vendor: Debian, runtime: /usr/lib/jvm/java-21-openjdk-amd64
 Default locale: en_US, platform encoding: UTF-8
@@ -193,13 +193,13 @@ ALL-DEFS-ийн дараа `results/mvn-verify-alldefs.txt` ба `results/jacoco
 
 | № | Мутаци | Төрөл | Үр дүн (results/-аас) |
 |---|---|---|---|
-| M1 | `streak = streak + 1` мөр (41) устгасан | Missing update (дутуу def) | Tests run: 17, Failures: 3. Унасан: (унасан тестийн мөрийг results/mvn-test-M1.txt-ээс хуул) |
+| M1 | `streak = streak + 1` мөр (41) устгасан | Missing update (дутуу def) | Tests run: 17, Failures: 3. Унасан: `BonusTest.b01_longStreakBreak` — expected: <8> but was: <5>; `BonusTest.b12_streakOfSix` — expected: <8> but was: <5>; `BonusTest.b13_streakFiveBelowThreshold` — expected: <3> but was: <0> |
 | M2 | `if (streak > best) best = streak;` → `best = present;` (42–44) | Wrong variable (буруу use) | **Ямар ч тест унасангүй** (Tests run: 17, Failures: 0) — мутант амьд |
 | M3 | давталтын дараа `int total = present + best;` нэмсэн | Dead definition (үхсэн def) | **Ямар ч тест унасангүй** (Tests run: 17, Failures: 0) — мутант амьд |
 
 **M2 — амьд үлдсэн.** `results/mvn-test-M2.txt`: Tests run: 17, Failures: 0. All-DU-pairs тестүүд (b01–b14) бүх 33 хосыг хамарсан ч мутантыг барьсангүй. *Яагаад:* DU хамралт нь def-ээс use хүртэлх **замыг** хамруулахыг шаарддаг, харин def-ийн **утгыг** шалгадаггүй. `best = present` нь `best = streak`-тэй адил def 43-ийг тодорхойлж, 42, 53-д use болдог тул Q21–Q26 хос бүгд хэвээр хамрагдана. Харин `best` шинэчлэгдэх мөчид `present` (нийт ирсэн өдөр) ба `streak` (одоогийн цуваа) өөр утгатай байвал л үр дүн ялгарна, өөрөөр хэлбэл цуваа тасарсан, мөн нийт ирсэн өдөр ≥ 5 байхад хамгийн урт цуваа < 5 тохиолдолд. b01–b14 дотор ийм тест байхгүй (b01-д present = 6, бодит best = 5, хоёул ≥ 5 тул мутант ялгарахгүй).
 
-**M2-ийг унагасан тест:** `b15_m2Killer_presentNotStreak` — `{1,1,1,0,1,1}`, threshold 1: present = 5, хамгийн урт цуваа = 3, зөв гаралт 5 (streak bonus байхгүй), харин M2 үед `best = present = 5` болж 8 өгнө. `results/mvn-test-M2-kill.txt`: Tests run: 18, Failures: 1. Унасан: унасан тестийн мөрийг results/mvn-test-M2-kill.txt-ээс хуул.
+**M2-ийг унагасан тест:** `b15_m2Killer_presentNotStreak` — `{1,1,1,0,1,1}`, threshold 1: present = 5, хамгийн урт цуваа = 3, зөв гаралт 5 (streak bonus байхгүй), харин M2 үед `best = present = 5` болж 8 өгнө. `results/mvn-test-M2-kill.txt`: Tests run: 18, Failures: 1. Унасан: `BonusTest.b15_m2Killer_presentNotStreak` — expected: <5> but was: <8>.
 
 **M3 — яагаад ямар ч тест унагадаггүй вэ?** `int total = present + best;` нь хэзээ ч уншигдахгүй хувьсагч (dead definition). Программын ажиллах үр дүн (буцаах утга, exception) огт өөрчлөгдөхгүй, JUnit тест нь зөвхөн гаралтыг шалгадаг тул унахгүй. `javac` ч үүнийг алдаа/анхааруулга гэж үзэхгүй, учир нь хууль ёсны код. Үүнийг **static analysis** хэрэгсэл (IDE-ийн шалгагч, SpotBugs `DLS_DEAD_LOCAL_STORE`, PMD `UnusedLocalVariable`) барих ёстой. IDE байхгүй тул PMD 6.55.0 (maven-pmd-plugin 3.21.2) ашигласан. Анхааруулга (DataFlowTargets.java, 49-р мөр, дүрэм UnusedLocalVariable):
 
@@ -213,4 +213,4 @@ DU анализ нь branch хамралтаас илүү нь утга хаан
 
 ## AI ашигласан эсэх
 
-AI туслах (Claude, Anthropic) ашигласан: DU хосуудын жагсаалт, `GcdTest`/`BonusTest` тест, CFG зураг, README-ийн ноорог болон commit/мутацийн скриптийг гаргахад. DU хос ба тестийн хамралтыг жижиг оролтуудын бүх хувилбараар (массив ≤ 8 урттай, threshold −1…9) дахин тооцоолж баталгаажуулсан. Эцсийн үр дүнгийн тоо бүр `results/` дахь `mvn` гаралтаас авсан.
+AI туслах (Claude, Anthropic) ашигласан: DU хосуудын жагсаалт, GcdTest/BonusTest тест, CFG зураг, README-ийн ноорог болон commit/мутацийн скриптийг гаргахад. DU хос ба тестийн хамралтыг жижиг оролтуудын бүх хувилбараар (массив ≤ 8 урттай, threshold −1…9) дахин тооцоолж баталгаажуулсан. Эцсийн үр дүнгийн тоо бүр results/ дахь mvn гаралтаас авсан.
